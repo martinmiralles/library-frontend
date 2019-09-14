@@ -177,7 +177,7 @@ const AddBook = () => {
   const showLoading = () =>
     loading && (
       <div className='alert alert-success'>
-        <h2>Loading...</h2>
+        <h2>Loassding...</h2>
       </div>
     );
 
