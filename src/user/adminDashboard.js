@@ -23,6 +23,16 @@ const AdminDashboard = () => {
               Create Book
             </Link>
           </li>
+          <li className='list-group-item'>
+            <Link className='nav-link' to='/admin/loans'>
+              View Loans
+            </Link>
+          </li>
+          <li className='list-group-item'>
+            <Link className='nav-link' to='/admin/books'>
+              Manage Books
+            </Link>
+          </li>
         </ul>
       </div>
     );

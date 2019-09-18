@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth/";
-import { Link } from "react-router-dom";
-import { createCategory, createBook, getCategories } from "./apiAdmin";
+import { Link, Redirect } from "react-router-dom";
+import { getBook, getCategories, updateBook } from "./apiAdmin";
 
-const AddBook = () => {
+const UpdateBook = ({ match }) => {
   //State
   const [values, setValues] = useState({
     name: "",
@@ -36,20 +36,40 @@ const AddBook = () => {
     formData
   } = values;
 
+  const init = bookId => {
+    getBook(bookId).then(data => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        //   populate state, then load categories
+        setValues({
+          ...values,
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          category: data,
+          quantity: data.quantity,
+          formData: new FormData()
+        });
+        initCategories();
+      }
+    });
+  };
+
   // Loads categories and sets form data
-  const init = () => {
+  const initCategories = () => {
     getCategories().then(data => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
-        setValues({ ...values, categories: data, formData: new FormData() });
+        setValues({ categories: data, formData: new FormData() });
       }
     });
   };
 
   // runs when component mounts and whenever value changes
   useEffect(() => {
-    init();
+    init(match.params.bookId);
   }, []);
 
   const handleChange = name => event => {
@@ -66,7 +86,7 @@ const AddBook = () => {
     event.preventDefault();
     setValues({ ...values, error: "", loading: true });
 
-    createBook(user._id, token, formData).then(data => {
+    updateBook(match.params.bookId, user._id, token, formData).then(data => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -78,6 +98,8 @@ const AddBook = () => {
           price: "",
           quantity: "",
           loading: false,
+          error: false,
+          redirectToProfile: false,
           createdBook: data.name
         });
       }
@@ -152,7 +174,7 @@ const AddBook = () => {
         />
       </div>
 
-      <button className='btn-outline-primary'>Create Book</button>
+      <button className='btn-outline-primary'>Update Book Details</button>
     </form>
   );
 
@@ -170,7 +192,7 @@ const AddBook = () => {
       className='alert alert-info'
       style={{ display: createdBook ? "" : "none" }}
     >
-      <h2>{`${createdBook}`} has been created </h2>
+      <h2>{`${createdBook}`} has been updated! </h2>
     </div>
   );
 
@@ -180,6 +202,14 @@ const AddBook = () => {
         <h2>Loading...</h2>
       </div>
     );
+
+  const redirectUser = () => {
+    if (redirectToProfile) {
+      if (!error) {
+        return <Redirect to='/' />;
+      }
+    }
+  };
 
   return (
     <Layout
@@ -192,10 +222,11 @@ const AddBook = () => {
           {showSuccess()}
           {showError()}
           {newPostForm()}
+          {redirectUser()}
         </div>
       </div>
     </Layout>
   );
 };
 
-export default AddBook;
+export default UpdateBook;

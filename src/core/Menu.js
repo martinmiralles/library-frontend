@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { signout, isAuthenticated } from "../auth/index";
+import { itemTotal } from "./itemHelpers";
 
 const isActive = (history, path) => {
   if (history.location.pathname === path) {
@@ -16,6 +17,29 @@ const Menu = ({ history }) => (
       <li className='nav-item'>
         <Link className='nav-link' style={isActive(history, "/")} to='/'>
           Home
+        </Link>
+      </li>
+
+      <li className='nav-item'>
+        <Link
+          className='nav-link'
+          style={isActive(history, "/saveditems")}
+          to='/savedItems'
+        >
+          Saved Items{" "}
+          <sup>
+            <small className='savedItems-badge'>{itemTotal()}</small>
+          </sup>
+        </Link>
+      </li>
+
+      <li className='nav-item'>
+        <Link
+          className='nav-link'
+          style={isActive(history, "/browse")}
+          to='/browse'
+        >
+          Books
         </Link>
       </li>
 
